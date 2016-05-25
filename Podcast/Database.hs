@@ -20,7 +20,8 @@ import Data.Int (Int64)
 fetchFeeds :: Connection -> [Int] -> IO [EntityFeed]
 fetchFeeds c ids = do
     let q = [sql|
-              SELECT feed_title, feed_link, feed_description, feed_last_build_date,
+              SELECT feed_title, feed_link, feed_itunes_url, 
+                feed_description, feed_last_build_date,
                 feed_explicit, feed_keywords, feed_categories, feed_summary
               FROM feeds WHERE feed_id IN ?
               |]
@@ -33,11 +34,12 @@ fetchFeeds c ids = do
 insertFeed :: Connection -> Feed -> IO Int64
 insertFeed c feed = do
     execute c [sql| INSERT INTO feeds 
-          (feed_title, feed_link, feed_description, feed_last_build_date,
+          (feed_title, feed_link, feed_itunes_url, 
+          feed_description, feed_last_build_date,
           feed_explicit, feed_keywords, feed_categories, feed_summary)
           VALUES 
-          (?, ?, ?, ?,
-           ?, ?, ?, ?) |]
+          (?, ?, ?, ?, 
+           ?, ?, ?, ?, ?) |]
           feed
 
 
