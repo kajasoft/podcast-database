@@ -1,46 +1,31 @@
 {-# LANGUAGE OverloadedStrings, RecordWildCards, ScopedTypeVariables, QuasiQuotes, FlexibleInstances #-} 
 module Podcast.Database where
-insert Podcast.Types
-insert Database.PostgreSQL.Simple
-insert Database.PostgreSQL.Simple.SqlQQ
-insert qualified Data.ByteString.Lazy as BL
-insert Control.Applicative
-insert Data.Aeson
-insert Data.Text (Text)
-insert qualified Data.Text as T
-insert Data.Time.Calendar (Day)
-insert qualified Data.Map as M
-insert Data.Maybe (catMaybes)
-insert Data.Text.Read (decimal, double)
-insert Data.Monoid
-insert Podcast.Types
-insert Data.Int (Int64)
+import Podcast.Types
+import Database.PostgreSQL.Simple
+import Database.PostgreSQL.Simple.SqlQQ
+import qualified Data.ByteString.Lazy as BL
+import Control.Applicative
+import Data.Aeson
+import Data.Text (Text)
+import qualified Data.Text as T
+import Data.Time.Calendar (Day)
+import qualified Data.Map as M
+import Data.Maybe (catMaybes)
+import Data.Text.Read (decimal, double)
+import Data.Monoid
+import Podcast.Types
+import Data.Int (Int64)
 
--- TODO CHANGEME
-baseQuery = [sql|
-        select title_id, title_uri, title, year, content_type, 
-        maturity_rating_value, synopsis,
-        actors_json, directors_json, creators_json, genres_json,
-        ((average_rating * 10)::integer) as average_rating,
-        awards_json, languages,
-        webpage, tinyurl, runtime,
-        series_id, series_title, season_id, season_title, season_number, 
-        program_sequence, program_count, children_ids, similars_ids, 
-        available_from,
-        expires_on,
-        is_hd, is_super_hd, is_ultra_hd, box_art_json,
-        rt_id,
-        rt_critics_rating, rt_critics_score,
-        rt_audience_rating, rt_audience_score, 
-        nyt_review_id, nyt_critics_pick,
-        queue_count, queue_count_today
-        from titles |]
 
 fetchFeeds :: Connection -> [Int] -> IO [EntityFeed]
 fetchFeeds c ids = do
-    let q = (baseQuery <> " where feed_id in ?")
+    let q = [sql|
+              SELECT feed_title, feed_link, feed_description, feed_last_build_date,
+                feed_explicit, feed_keywords, feed_categories, feed_summary
+              FROM feeds WHERE feed_id IN ?
+              |]
     xs <- query c q $ Only (In ids)
-    -- order by original ids
+    -- Order by original ids
     let xs' = M.fromList $ map (\x@EntityFeed{..} -> (feedId, x)) xs
     let xs'' = catMaybes $ map (\i -> M.lookup i xs') ids
     return xs''
