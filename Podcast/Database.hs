@@ -3,6 +3,8 @@ module Podcast.Database where
 import Podcast.Types
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.FromRow
+import Database.PostgreSQL.Simple.ToRow
+import Database.PostgreSQL.Simple.ToField
 import Database.PostgreSQL.Simple.SqlQQ
 import qualified Data.ByteString.Lazy as BL
 import Control.Applicative
@@ -21,11 +23,7 @@ data EntityFeed = EntityFeed {
     , eFeed :: Feed
     }
 
-decimalFromText :: Text 
-                -> Int    -- ^ default 
-                -> Int
-decimalFromText x def = either (const def) fst $ decimal x
-
+-- TODO CHANGEME
 baseQuery = [sql|
         select title_id, title_uri, title, year, content_type, 
         maturity_rating_value, synopsis,
@@ -63,9 +61,37 @@ instance FromRow EntityFeed where
         <*> field
         <*> field
         <*> field
-        <*> field -- keywords
-        <*> field -- categories
+        <*> (T.splitOn "," <$> field) -- keywords
+        <*> (T.splitOn "," <$> field) -- categories
         <*> field
         )
+
+instance ToRow Feed where
+  toRow Feed{..} = [
+      toField chTitle
+    , toField chLink
+    , toField chDescription
+    , toField chLastBuildDate
+    , toField chExplicit
+    , toField $ T.intercalate "," chKeywords
+    , toField $ T.intercalate "," chCategories
+    , toField chSummary
+    ]
+
+
+------------------------------------------------------------------------
+
+decodeIds :: Maybe Text -> [Int]
+decodeIds s =
+    case s of 
+      Nothing -> []
+      Just s' -> let xs = T.splitOn "," s'
+                 in map (flip decimalFromText 0) xs
+
+
+decimalFromText :: Text 
+                -> Int    -- ^ default 
+                -> Int
+decimalFromText x def = either (const def) fst $ decimal x
 
 
