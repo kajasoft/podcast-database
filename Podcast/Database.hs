@@ -2,9 +2,6 @@
 module Podcast.Database where
 import Podcast.Types
 import Database.PostgreSQL.Simple
-import Database.PostgreSQL.Simple.FromRow
-import Database.PostgreSQL.Simple.ToRow
-import Database.PostgreSQL.Simple.ToField
 import Database.PostgreSQL.Simple.SqlQQ
 import qualified Data.ByteString.Lazy as BL
 import Control.Applicative
@@ -17,11 +14,7 @@ import Data.Maybe (catMaybes)
 import Data.Text.Read (decimal, double)
 import Data.Monoid
 import Podcast.Types
-
-data EntityFeed = EntityFeed {
-      feedId :: Int
-    , eFeed :: Feed
-    }
+import Data.Int (Int64)
 
 -- TODO CHANGEME
 baseQuery = [sql|
@@ -52,31 +45,15 @@ fetchFeeds c ids = do
     let xs'' = catMaybes $ map (\i -> M.lookup i xs') ids
     return xs''
 
-instance FromRow EntityFeed where
-  fromRow = EntityFeed
-    <$> field
-    <*> (Feed 
-        <$> field
-        <*> field
-        <*> field
-        <*> field
-        <*> field
-        <*> (T.splitOn "," <$> field) -- keywords
-        <*> (T.splitOn "," <$> field) -- categories
-        <*> field
-        )
-
-instance ToRow Feed where
-  toRow Feed{..} = [
-      toField chTitle
-    , toField chLink
-    , toField chDescription
-    , toField chLastBuildDate
-    , toField chExplicit
-    , toField $ T.intercalate "," chKeywords
-    , toField $ T.intercalate "," chCategories
-    , toField chSummary
-    ]
+importFeed :: Connection -> Feed -> IO Int64
+importFeed c feed = do
+    execute c [sql| INSERT INTO feeds 
+          (feed_title, feed_link, feed_description, feed_last_build_date,
+          feed_explicit, feed_keywords, feed_categories, feed_summary)
+          VALUES 
+          (?, ?, ?, ?,
+           ?, ?, ?, ?) |]
+          feed
 
 
 ------------------------------------------------------------------------
