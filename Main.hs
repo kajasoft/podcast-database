@@ -63,7 +63,7 @@ main = do
               let x :: Item
                   x = maybe (error $ "Could not parse Item: " ++ show line) id $ decode line
               itemId <- do
-                          itemId <- doesItemExist c (iGUID x) 
+                          itemId <- doesItemExist c feedId (iGUID x) 
                           maybe (insertItem c (InsertItem feedId x)) return $ itemId
               print itemId
               ) lines

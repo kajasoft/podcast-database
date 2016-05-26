@@ -12,7 +12,7 @@ create table feeds (
   feed_summary text  -- may be redundnat with description
   );
 
--- drop table items;
+drop table items;
 create table items (
   item_id serial primary key,
   feed_id integer not null references feeds (feed_id),
@@ -20,12 +20,13 @@ create table items (
   item_link varchar,
   item_summary text,
   item_pubdate text, 
-  item_guid varchar not null unique,
+  item_guid varchar not null,
   item_categories varchar,
   item_audio_url varchar not null,
   item_duration varchar,
   item_explicit boolean null
   );
 
+alter table items add constraint items_feed_id_guid_uniq_key UNIQUE (feed_id, item_guid); 
 
 
