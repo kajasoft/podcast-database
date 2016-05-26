@@ -1,5 +1,6 @@
 create table feeds (
   feed_id serial primary key,
+  feed_url varchar not null unique,
   feed_title varchar,
   feed_link varchar,
   feed_itunes_url varchar,
