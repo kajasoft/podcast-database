@@ -15,6 +15,7 @@ import Data.Text.Read (decimal, double)
 import Data.Monoid
 import Podcast.Types
 import Data.Maybe (listToMaybe)
+import Data.Int (Int64)
 
 fetchFeeds :: Connection -> [Int] -> IO [EntityFeed]
 fetchFeeds c ids = do
@@ -84,7 +85,28 @@ insertItem c item = do
           ?, ?, ?, ?, ?,
           ?, ? ) 
         RETURNING item_id |] item
-    return . errInsert "insertItem" $ xs
+    itemId <- return . errInsert "insertItem" $ xs
+    _ <- insertItemTags c itemId (iiItem item )
+    return itemId
+
+insertItemTags :: Connection -> Int  -> Item -> IO Int64
+insertItemTags c itemId Item{..} = do
+    let tags = iKeywords
+    tagIds <- mapM (insertTag c) tags
+    let tagIds' = commaJoin tagIds
+    execute c "update items set item_tag_ids = ? where item_id = ?" (tagIds', itemId)
+
+commaJoin :: [Int] -> Text
+commaJoin = T.intercalate "," . map (T.pack . show) 
+
+insertTag :: Connection -> Text -> IO Int
+insertTag c tag = do
+    r :: [(Only Int)] <- query c "select tag_id from tags where tag = ?" (Only tag)
+    case r of
+      [(Only tagId)] -> return tagId
+      _ -> do
+        xs :: [(Only Int)] <- query c "INSERT INTO tags (tag) values (?) returning tag_id" (Only tag)
+        return . errInsert "insertTag" $ xs
 
 doesItemExist :: Connection -> Int -> Text -> IO (Maybe Int)
 doesItemExist c feedId guid = do

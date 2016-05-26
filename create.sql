@@ -25,9 +25,15 @@ create table items (
   item_keywords varchar null,
   item_audio_url varchar not null,
   item_duration varchar,
-  item_explicit boolean null
+  item_explicit boolean null,
+  item_tag_ids varchar null -- multiattr
   );
 
 create unique index items_feed_id_guid_uniq_idx ON items (feed_id, item_guid); 
 
+create table tags (
+  tag_id serial primary key,
+  tag varchar(51)
+  );
 
+create index tag_idx on tags(tag);
