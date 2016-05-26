@@ -57,14 +57,16 @@ main = do
                   maybe (insertFeed c f) return $ feedId''
           print feedId'
       InsertItemCommand feedId -> do
-          s <- BL.getContents
-          let x :: Item
-              x = maybe (error $ "Could not parse InsertItem: " ++ show s) id $ decode s
           c <- getConnection optDatabaseName
-          itemId <- do
-                  itemId <- doesItemExist c (iGUID x) 
-                  maybe (insertItem c (InsertItem feedId x)) return $ itemId
-          print itemId
+          lines <- BL.lines <$> BL.getContents
+          mapM_ (\line -> do
+              let x :: Item
+                  x = maybe (error $ "Could not parse InsertItem: " ++ show line) id $ decode line
+              itemId <- do
+                          itemId <- doesItemExist c (iGUID x) 
+                          maybe (insertItem c (InsertItem feedId x)) return $ itemId
+              print itemId
+              ) lines
 
 getConnection :: String -> IO Connection
 getConnection dbname = 
