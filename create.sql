@@ -11,3 +11,20 @@ create table feeds (
   feed_categories varchar,
   feed_summary text  -- may be redundnat with description
   );
+
+create table items (
+  item_id serial primary key,
+  feed_id integer not null references feeds (feed_id),
+  item_title varchar not null,
+  item_link varchar,
+  item_summary text,
+  item_pubdate text, 
+  item_guid varchar not null unique,
+  item_categories varchar,
+  item_audio_url varchar not null,
+  item_duration varchar,
+  item_explicit boolean null
+  );
+
+
+

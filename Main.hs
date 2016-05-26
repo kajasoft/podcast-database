@@ -13,7 +13,8 @@ data Options = Options {
   , optCmd :: Command
   }
 
-data Command = InsertFeed 
+data Command = InsertFeedCommand
+             | InsertItemCommand Int
 
 options :: Parser Options
 options = Options
@@ -27,20 +28,24 @@ options = Options
 
 cmd :: Parser Command
 cmd = subparser (
-    command "insert-feed" (info (helper <*> insertFeedCmd) (progDesc "Insert Feed from JSON"))
+      command "insert-feed" (info (helper <*> pure InsertFeedCommand)   
+                            (progDesc "Insert Feed from JSON on STDIN"))
+   <> command "insert-item" (info (helper <*> insertItemCommand) 
+                            (progDesc "Insert Item from JSON on STDIN"))
   )
+
+insertItemCommand :: Parser Command
+insertItemCommand = InsertItemCommand <$> argument auto (metavar "FEED-ID")
 
 opts :: ParserInfo Options
 opts = info (helper <*> options)
             (header "podcast-database" <> fullDesc)
 
-insertFeedCmd :: Parser Command
-insertFeedCmd = pure InsertFeed
 
 main = do
     Options{..} <- execParser opts
     case optCmd of
-      InsertFeed -> do
+      InsertFeedCommand -> do
           -- make sure wrapper script limits input to top of file where feed json is
           s <- BL.getContents
           let f :: Feed
@@ -51,7 +56,15 @@ main = do
                   feedId'' <- doesFeedExist c (chURL f)
                   maybe (insertFeed c f) return $ feedId''
           print feedId'
-
+      InsertItemCommand feedId -> do
+          s <- BL.getContents
+          let x :: Item
+              x = maybe (error $ "Could not parse InsertItem: " ++ show s) id $ decode s
+          c <- getConnection optDatabaseName
+          itemId <- do
+                  itemId <- doesItemExist c (iGUID x) 
+                  maybe (insertItem c (InsertItem feedId x)) return $ itemId
+          print itemId
 
 getConnection :: String -> IO Connection
 getConnection dbname = 

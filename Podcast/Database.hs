@@ -14,10 +14,9 @@ import Data.Maybe (catMaybes)
 import Data.Text.Read (decimal, double)
 import Data.Monoid
 import Podcast.Types
-import Data.Int (Int64)
+import Data.Maybe (listToMaybe)
 
-
-fetchFeeds :: Connection -> [Int64] -> IO [EntityFeed]
+fetchFeeds :: Connection -> [Int] -> IO [EntityFeed]
 fetchFeeds c ids = do
     let q = [sql|
               SELECT feed_url, feed_title, feed_link, feed_itunes_url, 
@@ -31,23 +30,66 @@ fetchFeeds c ids = do
     let xs'' = catMaybes $ map (\i -> M.lookup i xs') ids
     return xs''
 
-insertFeed :: Connection -> Feed -> IO Int64
+insertFeed :: Connection -> Feed -> IO Int
 insertFeed c feed = do
-    execute c [sql| INSERT INTO feeds 
-          (feed_url, feed_title, feed_link, feed_itunes_url, 
-          feed_description, feed_last_build_date,
-          feed_explicit, feed_keywords, feed_categories, feed_summary)
+    xs :: [(Only Int)] <- query c [sql| INSERT INTO feeds 
+         (feed_url, 
+          feed_title, 
+          feed_link, 
+          feed_itunes_url, 
+          feed_description, 
+          feed_last_build_date,
+          feed_explicit, 
+          feed_keywords, 
+          feed_categories, 
+          feed_summary)
           VALUES 
           (?, ?, ?, ?, ?, 
-           ?, ?, ?, ?, ?) |]
+           ?, ?, ?, ?, ?) RETURNING feed_id|]
           feed
+    return . errInsert "insertFeed" $ xs 
 
-doesFeedExist :: Connection -> Text -> IO (Maybe Int64)
+errInsert :: String -> [(Only Int)] -> Int
+errInsert msg xs = 
+    let n' = listToMaybe [ n | Only n <- xs ]
+    in maybe (error $ msg ++ " failed") id n'
+
+doesFeedExist :: Connection -> Text -> IO (Maybe Int)
 doesFeedExist c feedURL' = do
-    r :: [(Only Int64)] <- query c "select feed_id from feeds where feed_url = ?" (Only feedURL')
+    r :: [(Only Int)] <- query c "select feed_id from feeds where feed_url = ?" (Only feedURL')
     case r of
       [(Only x)] -> return $ Just x
       _          -> return Nothing
+
+-- | takes a InsertItem, and returns Item ID
+insertItem :: Connection -> InsertItem -> IO Int
+insertItem c item = do
+    xs :: [(Only Int)] <- query c [sql| INSERT INTO items
+        ( 
+          feed_id,
+          item_title,
+          item_link,
+          item_summary,
+          item_pubdate, 
+          item_guid,
+          item_categories,
+          item_audio_url,
+          item_duration,
+          item_explicit 
+        )
+        VALUES 
+        ( ?, ?, ?, ?, ?,
+          ?, ?, ?, ? ) 
+        RETURNING item_id |] item
+    return . errInsert "insertItem" $ xs
+
+doesItemExist :: Connection -> Text -> IO (Maybe Int)
+doesItemExist c guid = do
+    r :: [(Only Int)] <- query c "select feed_id from feeds where item_guid = ?" (Only guid)
+    case r of
+      [(Only x)] -> return $ Just x
+      _          -> return Nothing
+
 
 ------------------------------------------------------------------------
 
