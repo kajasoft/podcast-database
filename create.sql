@@ -12,6 +12,7 @@ create table feeds (
   feed_summary text  -- may be redundnat with description
   );
 
+-- drop table items;
 create table items (
   item_id serial primary key,
   feed_id integer not null references feeds (feed_id),

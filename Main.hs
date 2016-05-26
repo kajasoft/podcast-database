@@ -61,7 +61,7 @@ main = do
           lines <- BL.lines <$> BL.getContents
           mapM_ (\line -> do
               let x :: Item
-                  x = maybe (error $ "Could not parse InsertItem: " ++ show line) id $ decode line
+                  x = maybe (error $ "Could not parse Item: " ++ show line) id $ decode line
               itemId <- do
                           itemId <- doesItemExist c (iGUID x) 
                           maybe (insertItem c (InsertItem feedId x)) return $ itemId

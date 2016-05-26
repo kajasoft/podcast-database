@@ -79,13 +79,13 @@ insertItem c item = do
         )
         VALUES 
         ( ?, ?, ?, ?, ?,
-          ?, ?, ?, ? ) 
+          ?, ?, ?, ?, ? ) 
         RETURNING item_id |] item
     return . errInsert "insertItem" $ xs
 
 doesItemExist :: Connection -> Text -> IO (Maybe Int)
 doesItemExist c guid = do
-    r :: [(Only Int)] <- query c "select feed_id from feeds where item_guid = ?" (Only guid)
+    r :: [(Only Int)] <- query c "select feed_id from items where item_guid = ?" (Only guid)
     case r of
       [(Only x)] -> return $ Just x
       _          -> return Nothing
