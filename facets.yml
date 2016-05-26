@@ -1,4 +1,4 @@
-option: max_matches=20000, field_weights=(title=10,synopsis=3,series_title=5,cast=6,director=4,genres=2)
+option: max_matches=20000, field_weights=(item_title=10,feed_title=3,item_keywords=3,item_categories=3)
 facets:
 - explicit:
     title: Explicit
