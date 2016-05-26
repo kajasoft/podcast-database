@@ -74,6 +74,7 @@ insertItem c item = do
           item_pubdate, 
           item_guid,
           item_categories,
+          item_keywords,
           item_audio_url,
           item_duration,
           item_explicit 

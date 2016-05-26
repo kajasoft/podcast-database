@@ -21,7 +21,8 @@ create table items (
   item_summary text,
   item_pubdate text, 
   item_guid varchar not null,
-  item_categories varchar,
+  item_categories varchar null,
+  item_keywords varchar null,
   item_audio_url varchar not null,
   item_duration varchar,
   item_explicit boolean null
