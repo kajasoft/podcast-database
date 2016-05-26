@@ -82,7 +82,7 @@ insertItem c item = do
         VALUES 
         ( ?, ?, ?, ?, ?,
           ?, ?, ?, ?, ?,
-          ? ) 
+          ?, ? ) 
         RETURNING item_id |] item
     return . errInsert "insertItem" $ xs
 
