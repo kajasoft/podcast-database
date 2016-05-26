@@ -1,0 +1,15 @@
+option: max_matches=20000, field_weights=(title=10,synopsis=3,series_title=5,cast=6,director=4,genres=2)
+facets:
+- explicit:
+    title: Explicit
+    order: desc
+    values: 
+    - 1 Explicit
+- tag_ids:
+    limit: 500
+    select: special
+    order: "count(*) desc"
+    before: true
+    after: false
+sorts:
+- . | Relevance 
