@@ -42,6 +42,12 @@ insertFeed c feed = do
            ?, ?, ?, ?, ?) |]
           feed
 
+doesFeedExist :: Connection -> Text -> IO Bool
+doesFeedExist c feedURL' = do
+    r :: [(Only Int)] <- query c "select feed_id from feeds where feed_url = ?" (Only feedURL')
+    case r of
+      [] -> return False
+      _ -> return True
 
 ------------------------------------------------------------------------
 
