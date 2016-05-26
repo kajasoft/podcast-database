@@ -59,12 +59,13 @@ main = do
       InsertItemCommand feedId -> do
           c <- getConnection optDatabaseName
           lines <- BL.lines <$> BL.getContents
+          [eFeed] <- fetchFeeds c [feedId]
           mapM_ (\line -> do
               let x :: Item
                   x = maybe (error $ "Could not parse Item: " ++ show line) id $ decode line
               itemId <- do
                           itemId <- doesItemExist c feedId (iGUID x) 
-                          maybe (insertItem c (InsertItem feedId x)) return $ itemId
+                          maybe (insertItem c (InsertItem eFeed x)) return $ itemId
               print itemId
               ) lines
 

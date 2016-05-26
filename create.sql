@@ -12,10 +12,10 @@ create table feeds (
   feed_summary text  -- may be redundnat with description
   );
 
-drop table items;
 create table items (
   item_id serial primary key,
   feed_id integer not null references feeds (feed_id),
+  feed_title varchar not null,  -- denormalization
   item_title varchar not null,
   item_link varchar,
   item_summary text,
@@ -27,6 +27,6 @@ create table items (
   item_explicit boolean null
   );
 
-alter table items add constraint items_feed_id_guid_uniq_key UNIQUE (feed_id, item_guid); 
+create unique index items_feed_id_guid_uniq_idx ON items (feed_id, item_guid); 
 
 
