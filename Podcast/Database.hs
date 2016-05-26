@@ -19,7 +19,7 @@ import Data.Maybe (listToMaybe)
 fetchFeeds :: Connection -> [Int] -> IO [EntityFeed]
 fetchFeeds c ids = do
     let q = [sql|
-              SELECT feed_url, feed_title, feed_link, feed_itunes_url, 
+              SELECT feed_id, feed_url, feed_title, feed_link, feed_itunes_url, 
                 feed_description, feed_last_build_date,
                 feed_explicit, feed_keywords, feed_categories, feed_summary
               FROM feeds WHERE feed_id IN ?
@@ -67,6 +67,7 @@ insertItem c item = do
     xs :: [(Only Int)] <- query c [sql| INSERT INTO items
         ( 
           feed_id,
+          feed_title,
           item_title,
           item_link,
           item_summary,
@@ -79,7 +80,8 @@ insertItem c item = do
         )
         VALUES 
         ( ?, ?, ?, ?, ?,
-          ?, ?, ?, ?, ? ) 
+          ?, ?, ?, ?, ?,
+          ? ) 
         RETURNING item_id |] item
     return . errInsert "insertItem" $ xs
 
