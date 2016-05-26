@@ -17,7 +17,7 @@ import Podcast.Types
 import Data.Int (Int64)
 
 
-fetchFeeds :: Connection -> [Int] -> IO [EntityFeed]
+fetchFeeds :: Connection -> [Int64] -> IO [EntityFeed]
 fetchFeeds c ids = do
     let q = [sql|
               SELECT feed_url, feed_title, feed_link, feed_itunes_url, 
@@ -42,12 +42,12 @@ insertFeed c feed = do
            ?, ?, ?, ?, ?) |]
           feed
 
-doesFeedExist :: Connection -> Text -> IO Bool
+doesFeedExist :: Connection -> Text -> IO (Maybe Int64)
 doesFeedExist c feedURL' = do
-    r :: [(Only Int)] <- query c "select feed_id from feeds where feed_url = ?" (Only feedURL')
+    r :: [(Only Int64)] <- query c "select feed_id from feeds where feed_url = ?" (Only feedURL')
     case r of
-      [] -> return False
-      _ -> return True
+      [(Only x)] -> return $ Just x
+      _          -> return Nothing
 
 ------------------------------------------------------------------------
 

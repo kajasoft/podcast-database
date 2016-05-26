@@ -48,10 +48,8 @@ main = do
                         id $ decode s
           c <- getConnection optDatabaseName
           feedId' <- do 
-                  b <- doesFeedExist c (chURL f)
-                  if b
-                  then Just <$> insertFeed c f
-                  else return Nothing
+                  feedId'' <- doesFeedExist c (chURL f)
+                  maybe (insertFeed c f) return $ feedId''
           print feedId'
 
 
