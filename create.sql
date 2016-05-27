@@ -19,7 +19,7 @@ create table items (
   item_title varchar not null,
   item_link varchar,
   item_summary text,
-  item_pubdate text, 
+  item_pubdate timestamp with time zone null, 
   item_guid varchar not null,
   item_categories varchar null,
   item_keywords varchar null,
