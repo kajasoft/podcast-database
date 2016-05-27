@@ -15,6 +15,7 @@ data Options = Options {
 
 data Command = InsertFeedCommand
              | InsertItemCommand Int
+             | FetchItemsCommand
 
 options :: Parser Options
 options = Options
@@ -32,6 +33,8 @@ cmd = subparser (
                             (progDesc "Insert Feed from JSON on STDIN"))
    <> command "insert-item" (info (helper <*> insertItemCommand) 
                             (progDesc "Insert Item from JSON on STDIN"))
+   <> command "items" (info (helper <*> pure FetchItemsCommand) 
+                            (progDesc "Fetch item ids from STDIN and output JSON"))
   )
 
 insertItemCommand :: Parser Command
@@ -44,6 +47,8 @@ opts = info (helper <*> options)
 
 main = do
     Options{..} <- execParser opts
+    c <- getConnection optDatabaseName
+
     case optCmd of
       InsertFeedCommand -> do
           -- make sure wrapper script limits input to top of file where feed json is
@@ -51,13 +56,11 @@ main = do
           let f :: Feed
               f = maybe (error $ "Could not parse Feed: " ++ show s)
                         id $ decode s
-          c <- getConnection optDatabaseName
           feedId' <- do 
                   feedId'' <- doesFeedExist c (chURL f)
                   maybe (insertFeed c f) return $ feedId''
           print feedId'
       InsertItemCommand feedId -> do
-          c <- getConnection optDatabaseName
           lines <- BL.lines <$> BL.getContents
           [eFeed] <- fetchFeeds c [feedId]
           mapM_ (\line -> do
@@ -68,6 +71,10 @@ main = do
                           maybe (insertItem c (InsertItem eFeed x)) return $ itemId
               print itemId
               ) lines
+      FetchItemsCommand -> do
+          ids :: [Int] <- (map read . lines) <$> getContents
+          items <- fetchItems c ids
+          mapM_ print items
 
 getConnection :: String -> IO Connection
 getConnection dbname = 
