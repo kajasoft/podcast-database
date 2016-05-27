@@ -24,7 +24,7 @@ create table items (
   item_categories varchar null,
   item_keywords varchar null,
   item_audio_url varchar not null,
-  item_duration varchar,
+  item_duration integer null,  -- seconds
   item_explicit boolean null,
   item_tag_ids varchar null -- multiattr
   );
