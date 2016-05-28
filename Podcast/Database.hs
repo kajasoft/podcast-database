@@ -131,12 +131,13 @@ commaJoin = T.intercalate "," . map (T.pack . show)
 insertTag :: Connection -> Text -> IO Int
 insertTag c tag = do
     let tag' = T.toLower tag
-    r :: [(Only Int)] <- query c "select tag_id from tags where tag = ?" (Only tag')
-    case r of
-      [(Only tagId)] -> return tagId
-      _ -> do
-        xs :: [(Only Int)] <- query c "INSERT INTO tags (tag) values (?) returning tag_id" (Only tag')
-        return . errInsert "insertTag" $ xs
+    withTransaction c $ do
+      r :: [(Only Int)] <- query c "select tag_id from tags where tag = ?" (Only tag')
+      case r of
+        [(Only tagId)] -> return tagId
+        _ -> do
+          xs :: [(Only Int)] <- query c "INSERT INTO tags (tag) values (?) returning tag_id" (Only tag')
+          return . errInsert "insertTag" $ xs
 
 doesItemExist :: Connection -> Int -> Text -> IO (Maybe Int)
 doesItemExist c feedId guid = do
