@@ -17,6 +17,7 @@ create table items (
   item_id serial primary key,
   feed_id integer not null references feeds (feed_id),
   feed_title varchar not null,  -- denormalization
+  feed_categories varchar null, -- copy of feed category int ids
   item_title varchar not null,
   item_link varchar,
   item_summary text,

@@ -72,7 +72,8 @@ insertFeed c feed = do
           feed_summary)
           VALUES 
           (?, ?, ?, ?, ?, 
-           ?, ?, ?, ?, ?) RETURNING feed_id|]
+           ?, ?, ?, ?, ?,
+           ?) RETURNING feed_id|]
           feed
     return . errInsert "insertFeed" $ xs 
 
@@ -95,6 +96,7 @@ insertItem c item = do
         ( 
           feed_id,
           feed_title,
+          feed_categories,
           item_title,
           item_link,
           item_summary,
@@ -109,7 +111,7 @@ insertItem c item = do
         VALUES 
         ( ?, ?, ?, ?, ?,
           ?, ?, ?, ?, ?,
-          ?, ? ) 
+          ?, ?, ? ) 
         RETURNING item_id |] item
     itemId <- return . errInsert "insertItem" $ xs
     _ <- insertItemTags c itemId (iiItem item )
