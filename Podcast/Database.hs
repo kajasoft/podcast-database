@@ -68,6 +68,7 @@ insertFeed c feed = do
           feed_explicit, 
           feed_keywords, 
           feed_categories, 
+          feed_categories_ids, 
           feed_summary)
           VALUES 
           (?, ?, ?, ?, ?, 

@@ -9,6 +9,7 @@ create table feeds (
   feed_explicit bool null, 
   feed_keywords varchar,
   feed_categories varchar,
+  feed_categories_ids varchar null, -- for indexing only
   feed_summary text  -- may be redundnat with description
   );
 
