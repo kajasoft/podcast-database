@@ -1,0 +1,74 @@
+Arts	
+Arts	Design	
+Arts	Food	
+Arts	Literature	
+Arts	Performing Arts	
+Arts	Performing Arts	Literature	
+Arts	Visual Arts	
+Automotive	
+Business	
+Business	Business News	
+Business	Management & Marketing	
+Business News	
+Comedy	
+Education	
+Education	Educational Technology	
+Education	Higher Ed	
+Education	Higher Education	
+Education	Training	
+Games & Hobbies	
+Games & Hobbies	Automotive	Aviation	
+Games & Hobbies	Video Games	
+Government & Organizations	
+Government & Organizations	Local	
+Government & Organizations	Non-Profit	
+Government & Organizations	Regional	
+Health	
+Health	Alternative Health	
+Health	Fitness & Nutrition	
+Health	Self-Help	
+Health	Sexuality	
+Info	
+Judaism	
+Kids & Family	
+Literature	
+Local	
+Music	
+Natural Sciences	
+News	
+News & Politics	
+News & Politics		
+News & Politics	News & Politics	
+News &amp; Politics	
+North Carolina authors	Books	
+Other Games	
+Performing Arts	
+Personal Journals	
+Public Radio	
+Religion & Spirituality	
+Religion & Spirituality	Islam	Christianity	Judaism	
+Science & Medicine	
+Science & Medicine	Health	
+Science & Medicine	Medicine	
+Science & Medicine	Natural Sciences	
+Science & Medicine	Social Sciences	
+Social Sciences	
+Society & Culture	
+Society & Culture	History	
+Society & Culture	Personal Journals	
+Society & Culture	Philosophy	
+Society & Culture	Places & Travel	
+Sports & Recreation	
+Sports & Recreation	College & High School	
+Sports & Recreation	Outdoor	
+TV & Film	
+Talk	
+Technology	
+Technology	Gadgets	
+Technology	Gadgets	Tech News	
+Technology	Podcasting	
+Technology	Software How-To	
+Technology	Tech News	
+business	
+http://www.itunes.com/dtds/podcast-1.0.dtd	News & Politics	
+news & politics	
