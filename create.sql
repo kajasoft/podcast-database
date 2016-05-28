@@ -7,7 +7,7 @@ create table feeds (
   feed_description text,
   feed_last_build_date varchar, -- for now
   feed_explicit bool null, 
-  feed_keywords varchar,
+  feed_keywords varchar null,
   feed_categories varchar,
   feed_categories_ids varchar null, -- for indexing only
   feed_summary text  -- may be redundnat with description
