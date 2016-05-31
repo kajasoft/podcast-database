@@ -111,6 +111,7 @@ insertItem c item = do
           item_title,
           item_link,
           item_summary,
+          item_summary_plain,
           item_pubdate, 
           item_guid,
           item_categories,
@@ -122,7 +123,7 @@ insertItem c item = do
         VALUES 
         ( ?, ?, ?, ?, ?,
           ?, ?, ?, ?, ?,
-          ?, ?, ? ) 
+          ?, ?, ?, ? ) 
         RETURNING item_id |] item
     itemId <- return . errInsert "insertItem" $ xs
     _ <- insertItemTags c itemId (iiItem item )
