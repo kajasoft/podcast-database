@@ -21,6 +21,7 @@ create table items (
   item_title varchar not null,
   item_link varchar,
   item_summary text,
+  item_summary_plain text,
   item_pubdate timestamp with time zone null, 
   item_guid varchar not null,
   item_categories varchar null,
