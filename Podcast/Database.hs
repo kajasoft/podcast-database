@@ -52,6 +52,7 @@ fetchItems c ids = do
         item_title,
         item_link,
         item_summary,
+        item_summary_plain,
         item_pubdate, 
         item_guid,
         item_categories,
