@@ -48,7 +48,6 @@ fetchItems c ids = do
         feed_id,
         feed_title,  
         feed_categories,
-        item_tag_ids, 
         item_title,
         item_link,
         item_summary,
