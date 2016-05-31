@@ -126,7 +126,8 @@ insertItem c item = do
           ?, ?, ?, ? ) 
         RETURNING item_id |] item
     itemId <- return . errInsert "insertItem" $ xs
-    _ <- insertItemTags c itemId (iiItem item )
+    -- insert item tags / keywords is deprecated
+    -- _ <- insertItemTags c itemId (iiItem item )
     return itemId
 
 insertItemTags :: Connection -> Int  -> Item -> IO Int64
