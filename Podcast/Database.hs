@@ -31,6 +31,16 @@ fetchFeeds c ids = do
     let xs'' = catMaybes $ map (\i -> M.lookup i xs') ids
     return xs''
 
+fetchFeedTitles :: Connection -> [Int] -> IO [(Int, Text)]
+fetchFeedTitles c ids = do
+    let q = [sql| SELECT feed_id, feed_title FROM feeds WHERE feed_id IN ?  |]
+    xs :: [(Int, Text)] <- query c q $ Only (In ids)
+    -- Order by original ids
+    let xs' = M.fromList $ map (\x -> (fst x, x)) xs
+    let xs'' = catMaybes $ map (\i -> M.lookup i xs') ids
+    return xs''
+
+
 fetchItems :: Connection -> [Int] -> IO [EntityItem]
 fetchItems c ids = do
     let q = [sql| SELECT 
